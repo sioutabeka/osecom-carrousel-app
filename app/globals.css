@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Surfaces & fonds */
+    --bg: #F7F5EB;            /* crème principal */
+    --cream: #F7F5EB;
+    --cream-soft: #FFFDF8;    /* blanc chaud */
+    --cream-gold: #F4EDC6;    /* crème dorée (callouts) */
+    --border-beige: #EFE6D0;
+
+    /* Encres / textes */
+    --ink: #3C2015;
+    --ink-brown: #3C2015;
+    --ink-brown-soft: #6B4A3A;
+    --ink-dark: #2F180F;
+
+    /* Olive (CTA primaire / accents structurels) */
+    --olive: #828234;
+    --olive-dark: #6F6F2C;
+    --olive-rgb: 130, 130, 52;
+
+    /* Bleu ciel */
+    --sky: #BFD2EF;
+    --sky-hover: #A9C2E8;
+
+    /* Rose (signature) */
+    --rose: #EA609F;
+    --rose-soft: #E8A6B0;
+    --rose-light: #FCC5DF;
+    --rose-rgb: 234, 96, 159;
+    --rose-soft-rgb: 232, 166, 176;
+
+    /* Aliases pour compat */
+    --accent: #EA609F;
+
+    /* Border radius tokens */
+    --r-xs: 8px;
+    --r-sm: 12px;
+    --r-md: 20px;
+    --r-lg: 24px;
+    --r-xl: 28px;
+    --r-2xl: 32px;
+    --r-pill: 999px;
+  }
+
+  body {
+    color: var(--ink);
+    background: var(--bg);
+    font-family: "Public Sans", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}

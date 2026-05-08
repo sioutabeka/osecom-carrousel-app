@@ -1,0 +1,93 @@
+{
+  "meta": {
+    "source": "osecom.com/blog (drafts locaux)",
+    "brand": "Osecom",
+    "context": "Agence de communication digitale, growth, conseil & storytelling. Carrousel Studio génère des carrousels Instagram à partir des articles de blog Osecom.",
+    "tone": "Direct, structuré, didactique. Pose les pièges, donne la mécanique, conclut sur l'action. Voix éditoriale tutoyée, sans jargon vide.",
+    "count": 6,
+    "tags": [
+      "Stratégie & Positionnement"
+    ]
+  },
+  "instructions": "Index des articles disponibles dans data/articles.json. Chaque entrée : slug (clé pour getArticle), titre, tag (groupe sidebar), résumé, présence d'un tableau, mots-clés/topics pour la recherche. La source brute (avec body_markdown, sources, framework, etc.) est dans data/articles-source.json.",
+  "index": [
+    {
+      "slug": "transformer-contenu-en-clients",
+      "title": "Comment transformer son contenu en clients (et pas seulement en likes)",
+      "tag": "Stratégie & Positionnement",
+      "summary": "Les likes ne paient pas tes factures. Trois leviers transforment l'engagement en clients : un contenu construit autour d'une promesse business, un funnel implicite dans chaque post, et une logique de conversion qui dépasse la portée. Tout le reste, c'est de l'ego.",
+      "has_table": true,
+      "keywords": [
+        "PAS"
+      ],
+      "topics": [
+        "strategie-positionnement"
+      ]
+    },
+    {
+      "slug": "publier-tous-les-jours-sans-strategie",
+      "title": "Pourquoi publier tous les jours ne sert à rien sans stratégie",
+      "tag": "Stratégie & Positionnement",
+      "summary": "Publier tous les jours sans stratégie, c'est ramer plus fort dans la mauvaise direction. La fréquence est une variable d'ajustement, pas un levier de croissance. Ce qui fait vendre, c'est la cohérence éditoriale et la place de chaque post dans un parcours — pas le nombre de posts.",
+      "has_table": true,
+      "keywords": [
+        "AIDA"
+      ],
+      "topics": [
+        "strategie-positionnement"
+      ]
+    },
+    {
+      "slug": "strategie-contenu-orientee-business",
+      "title": "Comment définir une stratégie de contenu orientée business",
+      "tag": "Stratégie & Positionnement",
+      "summary": "9 stratégies de contenu sur 10 ne sont que des calendriers maquillés. Une vraie stratégie business répond à 4 questions : à qui je parle, qu'est-ce que je leur promets, comment je les amène à acheter, et comment je mesure que ça marche. Documenter ces 4 réponses augmente le ROI moyen de 33 %.",
+      "has_table": true,
+      "keywords": [
+        "4P"
+      ],
+      "topics": [
+        "strategie-positionnement"
+      ]
+    },
+    {
+      "slug": "visibilite-engagement-conversion",
+      "title": "Quelle différence entre visibilité, engagement et conversion ?",
+      "tag": "Stratégie & Positionnement",
+      "summary": "Visibilité, engagement, conversion : trois étages d'un même escalier. La majorité des entrepreneurs les confondent et optimisent au mauvais étage. Tu ne demandes pas à un post de découverte de vendre — tu lui demandes d'être vu. Comprendre la chaîne, c'est arrêter de prendre les mauvaises décisions.",
+      "has_table": true,
+      "keywords": [
+        "PAS"
+      ],
+      "topics": [
+        "strategie-positionnement"
+      ]
+    },
+    {
+      "slug": "savoir-si-contenu-rapporte-argent",
+      "title": "Comment savoir si votre contenu vous rapporte vraiment de l'argent",
+      "tag": "Stratégie & Positionnement",
+      "summary": "Seul un tiers des marketeurs sait mesurer le ROI réel de son contenu. La bonne nouvelle : tu n'as pas besoin d'une stack analytics complexe. Quatre leviers simples (UTM, question au client, formule basique, fenêtre de 90 jours) te donnent 80 % du signal pour 20 % de l'effort.",
+      "has_table": false,
+      "keywords": [
+        "AIDA"
+      ],
+      "topics": [
+        "strategie-positionnement"
+      ]
+    },
+    {
+      "slug": "creer-offre-coherente-contenu",
+      "title": "Comment créer une offre cohérente avec votre contenu",
+      "tag": "Stratégie & Positionnement",
+      "summary": "Si ton contenu attire des likes mais ton offre ne ramène pas de clients, le problème n'est probablement pas ton contenu. C'est l'écart entre ce que tu racontes et ce que tu proposes. Aligner les deux peut augmenter conversion, confiance et rétention de 36 %. La méthode : 3 questions, une page A4, et plus de pivots invisibles.",
+      "has_table": false,
+      "keywords": [
+        "4P"
+      ],
+      "topics": [
+        "strategie-positionnement"
+      ]
+    }
+  ]
+}
