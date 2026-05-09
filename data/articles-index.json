@@ -4,9 +4,14 @@
     "brand": "Osecom",
     "context": "Agence de communication digitale, growth, conseil & storytelling. Carrousel Studio génère des carrousels Instagram à partir des articles de blog Osecom.",
     "tone": "Direct, structuré, didactique. Pose les pièges, donne la mécanique, conclut sur l'action. Voix éditoriale tutoyée, sans jargon vide.",
-    "count": 6,
+    "count": 30,
     "tags": [
-      "Stratégie & Positionnement"
+      "Stratégie & Positionnement",
+      "Social Media (Instagram / TikTok / LinkedIn)",
+      "Copywriting & Contenu qui Vend",
+      "Acquisition & Funnel",
+      "Performance & Analyse",
+      "Positionnement Expert (High Value Content)"
     ]
   },
   "instructions": "Index des articles disponibles dans data/articles.json. Chaque entrée : slug (clé pour getArticle), titre, tag (groupe sidebar), résumé, présence d'un tableau, mots-clés/topics pour la recherche. La source brute (avec body_markdown, sources, framework, etc.) est dans data/articles-source.json.",
@@ -87,6 +92,318 @@
       ],
       "topics": [
         "strategie-positionnement"
+      ]
+    },
+    {
+      "slug": "contenu-attire-clients-instagram",
+      "title": "Comment créer du contenu qui attire des clients sur Instagram",
+      "tag": "Social Media (Instagram / TikTok / LinkedIn)",
+      "summary": "Sur Instagram en 2026, ce ne sont plus les Reels seuls qui font des clients. C'est la combinaison Reels (qui font venir les inconnus) + Carrousels (qui les transforment en abonnés engagés) + CTA DM automation (qui les transforment en clients). Avec un bon mix, le taux de conversion passe de 2-3 % à 12-18 %.",
+      "has_table": true,
+      "keywords": [
+        "4P"
+      ],
+      "topics": [
+        "social-media"
+      ]
+    },
+    {
+      "slug": "vues-mais-ne-vendent-pas",
+      "title": "Pourquoi vos posts font des vues mais ne vendent pas",
+      "tag": "Social Media (Instagram / TikTok / LinkedIn)",
+      "summary": "Tes posts cartonnent en vues mais pas en CA pour 5 raisons précises : tu attires la mauvaise audience, tu n'as pas de preuves sociales, ta promesse manque de clarté, tu n'as pas de mécanique de qualification, et ton offre est invisible. Aucune n'est dramatique. Toutes sont réparables en 30 jours.",
+      "has_table": false,
+      "keywords": [
+        "PAS"
+      ],
+      "topics": [
+        "social-media"
+      ]
+    },
+    {
+      "slug": "posts-par-semaine-resultats-concrets",
+      "title": "Combien de posts par semaine pour obtenir des résultats concrets ?",
+      "tag": "Social Media (Instagram / TikTok / LinkedIn)",
+      "summary": "La bonne fréquence n'est pas \"le plus possible\". C'est 3 à 5 posts par semaine, soutenus pendant au moins 20 semaines sur 26. Cette régularité génère +450 % d'engagement par post vs un planning sporadique. Le bon nombre de posts est celui que tu peux tenir 6 mois sans baisser en qualité.",
+      "has_table": true,
+      "keywords": [
+        "AIDA"
+      ],
+      "topics": [
+        "social-media"
+      ]
+    },
+    {
+      "slug": "formats-contenu-convertissent-2026",
+      "title": "Quels formats de contenu convertissent le mieux en 2026 ?",
+      "tag": "Social Media (Instagram / TikTok / LinkedIn)",
+      "summary": "Pas de format universel en 2026. Sur Instagram, les carrousels écrasent les Reels en engagement (+109 %), les Reels écrasent les carrousels en reach (+122 %). Sur LinkedIn, les carrousels PDF dominent tout (+196 % vs vidéo). Sur TikTok, la vidéo reste reine (+77 % vs photos). Et le UGC convertit 6,73× plus que le polished sur tous les formats.",
+      "has_table": true,
+      "keywords": [
+        "4P"
+      ],
+      "topics": [
+        "social-media"
+      ]
+    },
+    {
+      "slug": "post-linkedin-leads",
+      "title": "Comment écrire un post LinkedIn qui génère des leads",
+      "tag": "Social Media (Instagram / TikTok / LinkedIn)",
+      "summary": "Sur LinkedIn en 2026, un post inbound bien structuré convertit 14,6 % des visiteurs en leads — 8 fois mieux qu'un message outbound. La méthode tient sur 6 lignes : hook contrarian, problème, solution courte, preuve, question ouverte, CTA discret. Les profils personnels battent les pages entreprise de 5 à 10×.",
+      "has_table": false,
+      "keywords": [
+        "AIDA"
+      ],
+      "topics": [
+        "social-media"
+      ]
+    },
+    {
+      "slug": "tiktok-video-virale-clients",
+      "title": "TikTok : comment transformer une vidéo virale en clients",
+      "tag": "Social Media (Instagram / TikTok / LinkedIn)",
+      "summary": "Une vidéo TikTok virale qui renvoie vers ton site convertit à 0,2-0,6 %. La même viralité, canalisée dans un funnel adapté à TikTok (challenge, in-app checkout, live shopping), convertit à 3-8 %, voire 8-12 % en live. Soit 10 à 20 fois mieux. Le problème n'est pas la viralité — c'est ce que tu en fais.",
+      "has_table": false,
+      "keywords": [
+        "PAS"
+      ],
+      "topics": [
+        "social-media"
+      ]
+    },
+    {
+      "slug": "post-donne-envie-acheter",
+      "title": "Comment écrire un post qui donne envie d'acheter",
+      "tag": "Copywriting & Contenu qui Vend",
+      "summary": "80 % des décisions d'achat sont émotionnelles, 95 % se prennent dans l'inconscient. Un post qui vend ne décrit pas un produit — il fait sentir une transformation. La méthode : 4 leviers (attention sensorielle, problème spécifique, désir projeté, action sans friction) qui multiplient la conversion par 5 à 10.",
+      "has_table": false,
+      "keywords": [
+        "AIDA"
+      ],
+      "topics": [
+        "copywriting-contenu"
+      ]
+    },
+    {
+      "slug": "7-erreurs-empechent-convertir",
+      "title": "Les 7 erreurs qui empêchent votre contenu de convertir",
+      "tag": "Copywriting & Contenu qui Vend",
+      "summary": "Si ton contenu ne convertit pas, c'est rarement par manque de talent. C'est par accumulation de 7 erreurs précises et récurrentes. Aucune n'est dramatique seule. Toutes ensemble étouffent ta conversion. La bonne nouvelle : chacune se corrige en 30 minutes maximum.",
+      "has_table": false,
+      "keywords": [
+        "PAS"
+      ],
+      "topics": [
+        "copywriting-contenu"
+      ]
+    },
+    {
+      "slug": "contenu-vend-sans-agresser",
+      "title": "Comment structurer un contenu qui vend sans être agressif",
+      "tag": "Copywriting & Contenu qui Vend",
+      "summary": "Vendre sans agresser n'est pas un compromis — c'est la stratégie qui convertit le mieux en 2026. Le ratio 80/20 (valeur/promo), le soft CTA, et un calendrier éditorial structuré te permettent de vendre régulièrement sans déclencher le filtre anti-pub de ton audience. La confiance est devenue la métrique #1 — et elle se construit, ne se vend pas.",
+      "has_table": true,
+      "keywords": [
+        "4P"
+      ],
+      "topics": [
+        "copywriting-contenu"
+      ]
+    },
+    {
+      "slug": "storytelling-vs-educatif",
+      "title": "Storytelling vs contenu éducatif : que choisir pour vendre ?",
+      "tag": "Copywriting & Contenu qui Vend",
+      "summary": "Ce n'est pas l'un ou l'autre. Le contenu purement éducatif construit l'expertise mais ne vend pas. Le pur storytelling crée du lien mais ne convertit pas seul. La formule qui domine en 2026 : story-driven education — une histoire personnelle qui sert de cadre à un enseignement actionnable. Les comptes qui maîtrisent ce mélange convertissent 2 à 3× plus que les autres.",
+      "has_table": true,
+      "keywords": [
+        "PAS"
+      ],
+      "topics": [
+        "copywriting-contenu"
+      ]
+    },
+    {
+      "slug": "hooks-arretent-scroll",
+      "title": "Comment créer des hooks qui arrêtent le scroll",
+      "tag": "Copywriting & Contenu qui Vend",
+      "summary": "Tu disposes de 1,7 seconde pour faire arrêter le scroll. 6 formules de hooks tiennent quasiment 100 % des cas qui marchent en 2026 : curiosity gap, contrarian, mid-action, identité ciblée, résultat chiffré, douleur précise. Tester 5 hooks par post avant de publier multiplie ton reach moyen par 2 à 3.",
+      "has_table": false,
+      "keywords": [
+        "AIDA"
+      ],
+      "topics": [
+        "copywriting-contenu"
+      ]
+    },
+    {
+      "slug": "audience-regarde-mais-achete-pas",
+      "title": "Pourquoi votre audience regarde mais n'achète pas",
+      "tag": "Copywriting & Contenu qui Vend",
+      "summary": "Une audience qui regarde mais n'achète pas est bloquée par 4 frictions invisibles : friction de confiance, de compréhension, de valeur perçue, et d'action. Une seule suffit à tuer la conversion. Les enlever ne demande pas plus de contenu — juste un audit méthodique. Et le résultat est mathématique : conversion ×2 à ×5 sans toucher à ton offre.",
+      "has_table": false,
+      "keywords": [
+        "PAS"
+      ],
+      "topics": [
+        "copywriting-contenu"
+      ]
+    },
+    {
+      "slug": "transformer-abonne-en-client",
+      "title": "Comment transformer un abonné en client (step by step)",
+      "tag": "Acquisition & Funnel",
+      "summary": "Un abonné devient client en 5 étapes précises : attirer, engager, nurture, convertir, fidéliser. La majorité des entrepreneurs en sautent 2 (engager et nurture) — les deux qui font 80 % de la conversion. Les programmes structurés génèrent 50 % de leads qualifiés en plus à -33 % de coût.",
+      "has_table": true,
+      "keywords": [
+        "4P"
+      ],
+      "topics": [
+        "acquisition-funnel"
+      ]
+    },
+    {
+      "slug": "dm-ou-page-vente",
+      "title": "Faut-il vendre en DM ou via une page de vente ?",
+      "tag": "Acquisition & Funnel",
+      "summary": "Le DM convertit à 15-20 %, une landing page médiane à 6,6 %. Mais ce n'est pas \"l'un ou l'autre\". Le DM excelle pour les offres premium et les services. La page de vente excelle pour le scalable et le cold traffic. Les comptes qui scalent utilisent les deux, dans le bon ordre, à la bonne étape du parcours.",
+      "has_table": true,
+      "keywords": [
+        "AIDA"
+      ],
+      "topics": [
+        "acquisition-funnel"
+      ]
+    },
+    {
+      "slug": "tunnel-simple-sans-site-web",
+      "title": "Comment créer un tunnel simple sans site web",
+      "tag": "Acquisition & Funnel",
+      "summary": "Tu n'as pas besoin d'un site web pour avoir un tunnel qui convertit. Une bio + une landing simple + un email tool + un lead magnet suffisent. Stack complet : 0 à 30 €/mois. Setup : 1 weekend. Et le tunnel mobile-first 2026 convertit souvent mieux qu'un site WordPress traditionnel.",
+      "has_table": true,
+      "keywords": [
+        "4P"
+      ],
+      "topics": [
+        "acquisition-funnel"
+      ]
+    },
+    {
+      "slug": "premiers-clients-strategie",
+      "title": "Quelle est la meilleure stratégie pour générer ses premiers clients",
+      "tag": "Acquisition & Funnel",
+      "summary": "Tes premiers clients ne viennent jamais d'inconnus. Clients 1-3 : réseau personnel. 4-6 : referrals. 7-10 : communauté + contenu. Cette séquence convertit 5 à 50× mieux que le cold outreach. Timeline réaliste : 60-90 jours, coût 0 €. Et c'est probablement la phase la plus inconfortable — mais la plus rentable — de ton année d'entrepreneuriat.",
+      "has_table": true,
+      "keywords": [
+        "4P"
+      ],
+      "topics": [
+        "acquisition-funnel"
+      ]
+    },
+    {
+      "slug": "reduire-cout-acquisition-contenu",
+      "title": "Comment utiliser le contenu pour réduire le coût d'acquisition",
+      "tag": "Acquisition & Funnel",
+      "summary": "Le paid coûte 5,8× plus cher par lead que le contenu organique en 2026. Mais le paid produit en mois 1, le contenu en mois 6-12. La vraie stratégie : 60 % organique, 40 % paid. L'organique compose dans le temps (jusqu'à 544 % ROI). Le paid achète la vitesse. Les comptes qui scalent durablement font les deux — dans le bon ordre.",
+      "has_table": false,
+      "keywords": [
+        "PAS"
+      ],
+      "topics": [
+        "acquisition-funnel"
+      ]
+    },
+    {
+      "slug": "tunnel-ne-convertit-pas-corriger",
+      "title": "Pourquoi votre tunnel ne convertit pas (et comment le corriger)",
+      "tag": "Acquisition & Funnel",
+      "summary": "Un tunnel ne convertit pas pour une raison précise et localisée — pas pour un \"problème global\". Les 4 fuites typiques : trafic non qualifié, landing qui repousse, étape friction qualification, vente sans clôture. Identifier la fuite #1 (pas les 4) et la réparer recupère 10 à 30 % de conversion. Audit en 90 minutes, fix en 1 semaine.",
+      "has_table": true,
+      "keywords": [
+        "PAS"
+      ],
+      "topics": [
+        "acquisition-funnel"
+      ]
+    },
+    {
+      "slug": "kpi-suivre-contenu",
+      "title": "Quels KPI suivre pour savoir si votre contenu fonctionne",
+      "tag": "Performance & Analyse",
+      "summary": "5 à 7 KPIs suffisent. Pas 30. Réparti sur 4 catégories : awareness, engagement, lead gen, revenu. Seul 36 % des marketeurs mesurent vraiment leur ROI contenu — et ces 36 % obtiennent 3,1× plus de budget. La différence entre piloter et subir tient à un dashboard simple, mis à jour 5 minutes par semaine.",
+      "has_table": true,
+      "keywords": [
+        "4P"
+      ],
+      "topics": [
+        "performance-analyse"
+      ]
+    },
+    {
+      "slug": "analyser-contenus-ameliorer-ventes",
+      "title": "Comment analyser ses contenus pour améliorer ses ventes",
+      "tag": "Performance & Analyse",
+      "summary": "L'analyse de contenu n'est pas une activité \"reporting\" — c'est ton plus gros levier de croissance. Identifier tes 20 % de posts qui font 80 % des résultats, en extraire les patterns, et les repurposer multiplie tes performances par 4. Le tout en 1 heure par mois. Ce qui te ralentit, ce n'est pas le manque de talent — c'est de réinventer chaque semaine.",
+      "has_table": false,
+      "keywords": [
+        "AIDA"
+      ],
+      "topics": [
+        "performance-analyse"
+      ]
+    },
+    {
+      "slug": "vues-mauvais-indicateur",
+      "title": "Pourquoi les vues ne sont pas un bon indicateur de succès",
+      "tag": "Performance & Analyse",
+      "summary": "En 2026, les vues sont la pire métrique pour piloter ton compte. Bots, scrolls passifs, audiences off-target les gonflent sans valeur. Les algos eux-mêmes ne récompensent plus les vues mais le watch time, les saves, les commentaires substantiels. Si tu pilotes au compteur de vues, tu pilotes une voiture en regardant la jauge à essence.",
+      "has_table": true,
+      "keywords": [
+        "PAS"
+      ],
+      "topics": [
+        "performance-analyse"
+      ]
+    },
+    {
+      "slug": "optimiser-contenus-data-driven",
+      "title": "Comment optimiser ses contenus avec une approche data-driven",
+      "tag": "Performance & Analyse",
+      "summary": "L'A/B testing contenu boost le time-on-page de 18 % et la conversion de 27 %. La règle d'or : la vitesse de test (nombre d'expérimentations par mois) est le meilleur prédicteur du succès long-terme. Tu n'as pas besoin de tools sophistiqués — juste d'un protocole simple : 1 test par semaine, 1 hypothèse claire, 1 décision à la fin.",
+      "has_table": true,
+      "keywords": [
+        "4P"
+      ],
+      "topics": [
+        "performance-analyse"
+      ]
+    },
+    {
+      "slug": "createur-a-expert-reconnu",
+      "title": "Comment passer de créateur de contenu à expert reconnu",
+      "tag": "Positionnement Expert (High Value Content)",
+      "summary": "Le créateur produit. L'expert publie *un point de vue*. Avec l'IA qui banalise la production, ce qui te distingue n'est plus ce que tu sais — c'est ce que tu défends. 5 leviers structurent ce passage : niche radicale, original research, prise de position, médias spécialisés, écosystème pair. Le tout en 12-18 mois.",
+      "has_table": false,
+      "keywords": [
+        "AIDA"
+      ],
+      "topics": [
+        "positionnement-expert"
+      ]
+    },
+    {
+      "slug": "image-marque-clients-premium",
+      "title": "Comment créer une image de marque qui attire des clients premium",
+      "tag": "Positionnement Expert (High Value Content)",
+      "summary": "Une image premium n'est pas une image plus belle — c'est une image plus *retenue*. Restraint visuel, précision narrative, cohérence à 100 %, et signaux de rareté. Les clients premium n'achètent pas ton service — ils achètent l'impression d'investir dans la qualité. Et cette impression se construit en 90 jours.",
+      "has_table": false,
+      "keywords": [
+        "4P"
+      ],
+      "topics": [
+        "positionnement-expert"
       ]
     }
   ]
