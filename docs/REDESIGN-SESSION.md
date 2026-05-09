@@ -1,201 +1,206 @@
-# Handoff — Session redesign carrousels
+# Handoff — Sessions carrousels
 
-> **Pour Claude (et toi)** : ce fichier permet de reprendre exactement où on s'est arrêté le 2026-05-08. Lis-le en premier, puis attaque la cover.
-
----
-
-## TL;DR de la situation
-
-- App **fonctionne** end-to-end : génération Claude (~45s) → édition inline → export PNG → ouverture Finder
-- 6 articles chargés (catégorie *Stratégie & Positionnement*) dans `data/articles-source.json`
-- Système de thèmes complet : upload set cover+body+cta, supprimer un thème, fallback fond ivoire si pas de body image
-- 1er commit pushé sur `main` (`sioutabeka/osecom-carrousel-app`, **privé**)
-- Doc client `PREVIEW.md` + 9 PNG du carrousel exemple à la racine du repo
-
-**Ce qui est PAS fait** : le **redesign visuel des slides**. C'est l'objet de cette session.
+> **Pour Claude (et toi)** : ce fichier permet de reprendre exactement où on s'est arrêté. Lis-le en premier, puis attaque la prochaine session.
 
 ---
 
-## Le problème à résoudre
+## Où on en est (mise à jour 2026-05-09)
 
-Quand l'utilisateur regarde les slides générées (cf. `PREVIEW.md`), il dit :
+### Sessions passées
 
-> *"je trouve que c'est trop claude code, on reconnait ton design direct ce qui retire la personnalité de la marque"*
+**2026-05-08 — Plomberie + handoff** : app fonctionnelle end-to-end, 6 articles chargés, système de thèmes, premier commit pushé. Doc client `PREVIEW.md` + 9 PNG du carrousel exemple.
 
-**Pas un problème de palette ni de fonts** — l'utilisateur a explicitement dit *"garde les couleurs du client"*. Ce qu'il faut changer : les **compositions** des slides, qui sont prévisibles (toutes le même squelette habillé différemment).
+**2026-05-09 — Articles + redesign visuel des slides** :
+- 24 articles ajoutés (de 6 → **30**) couvrant 5 nouvelles catégories : Social Media, Copywriting, Acquisition & Funnel, Performance & Analyse, Positionnement Expert. Voir `data/articles-source.json` + script `scripts/merge-articles.mjs` (pipeline `node scripts/convert-articles.mjs`).
+- Redesign visuel des slides (palette + typos préservées) :
+  - ♥ remplace le dot rose à halo (footer cover/CTA + action body)
+  - ★ remplace la barre olive du tag eyebrow
+  - Encadré testbox arrondi (radius 14px) avec label déplacé à droite en pastille pilule légèrement tiltée (-2°) pour un disrupt pattern
+  - Tous les traits séparateurs retirés (footer cover, action body, step-rows)
+  - Cadre translucide blanc cassé étendu à toutes les body slides (était réservé à cover/CTA), élargi (top/bottom 8 %, left/right 7 %) pour donner plus d'air
+- Mécanique anti-débordement : composant `FitToParent` dans `Carousel.tsx` qui mesure et applique un `transform: scale()` proportionnel uniquement quand le contenu déborde sa zone. Aucune coupure de texte, juste compression visuelle douce. ResizeObserver + `document.fonts.ready` pour re-mesurer après chargement async des polices. Wrappe `Body`, `Method`, `Steps`, `Donts`.
+- `next.config.mjs` : `devIndicators: false` → retire le badge "N" Next.js qui apparaissait sur les exports d'images.
+- 2 scripts debug : `scripts/debug-fit.mjs` (Playwright qui inspecte chaque slide, flag overflow + scale appliqué) et `scripts/screenshot-slide.mjs` (screenshot ciblé d'une slide).
+
+État repo après push :
+- `87b2ae4` slides: redesign visuel + auto-fit overflow
+- `529658b` content: add 24 articles (IDs 7-30)
+- Tout pushé sur `origin/main` (`sioutabeka/osecom-carrousel-app`, privé).
+
+### Ce qui reste à creuser visuellement
+
+- **Cover et CTA** n'ont pas eu de refonte structurelle dans cette session — ils gardent le glassmorphism de la première itération. Si on veut leur donner un traitement plus distinctif que les body, c'est un chantier ouvert.
+- **Method / Steps / Donts** ont tous le même cadre translucide. Leur donner 3 personnalités distinctes (numéros décoratifs / ligne typo éditoriale / treatment manifesto) reste un objectif possible.
+- Le **redesign visuel actuel est validé par l'utilisateur** ; on n'y revient pas sauf demande explicite.
 
 ---
 
-## Les contraintes (à respecter)
+## Prochaine session — Templates et directives de l'app dans le texte du carrousel
+
+### Scope annoncé par l'utilisateur
+
+> *"la prochaine fois on va travailler les templates et directive de l'app dans le texte du carrousel"*
+
+Lecture : on ne touche plus le **visuel** des slides, on travaille le **contenu textuel** que Claude génère pour chaque type de slide. C'est-à-dire :
+
+1. **Le prompt** qui pilote Claude lors de la génération (`lib/prompts/extract.ts` — la constante `BRAND_VOICE`)
+2. **Le schéma** qui contraint les sorties Claude (`lib/schemas.ts` — Zod)
+3. **Les directives par type de slide** (cover, body, method, steps, donts, cta) — actuellement dans le BRAND_VOICE en bloc, peut-être à séparer par template
+
+### Pistes à explorer (à confirmer avec l'utilisateur en début de session)
+
+- **Affiner les directives par type de slide** : longueur des titres, ton, structure narrative attendue. Aujourd'hui c'est dans le BRAND_VOICE mais c'est dense — on pourrait faire des directives ciblées.
+- **Rendre les types de slides plus distinctifs** : aujourd'hui method et steps se ressemblent narrativement (juste 2-3 vs 4-8 étapes). Donner à chacun un *job narratif* différent (method = framework conceptuel, steps = checklist opérationnelle, donts = anti-patterns à fuir).
+- **Ajouter de nouveaux types ?** : si l'utilisateur veut introduire des templates supplémentaires (ex : `quote` pour citation, `stat` pour donnée chiffrée, `compare` pour avant/après), c'est ici qu'on l'ajoute. **Impact** : il faudrait alors aussi étendre `lib/schemas.ts` ET `app/_components/Carousel.tsx` (composant React + CSS).
+- **Voix éditoriale** : peaufiner la voix Osecom dans le prompt si l'utilisateur trouve que les sorties Claude sont trop génériques ou trop "Claude" dans la formulation.
+- **Tags textuels** : aujourd'hui Claude peut générer n'importe quel tag (`LE PIÈGE`, `LA MÉTHODE`…). On pourrait les contraindre à une liste finie pour homogénéiser le carrousel global, ou au contraire les laisser libres pour de la variété.
+- **Markers riches** (`*italique*`, `**gras**`) : aujourd'hui autorisés à 1-2 par slide. Si l'utilisateur veut plus / moins / autre chose (ex : underline, small caps), c'est ici.
+
+### Map des fichiers pour cette session
+
+| Fichier | Rôle | Notes |
+|---|---|---|
+| `lib/prompts/extract.ts` | Prompt système (`BRAND_VOICE`) qui guide Claude | 189 lignes ; BRAND_VOICE en haut, schéma JSON en bas. C'est le **fichier principal** de la session. |
+| `lib/schemas.ts` | Schéma Zod des slides | 90 lignes. À toucher si on ajoute un type de slide ou un champ. |
+| `lib/claude.ts` | Wrapper d'appel à l'API Claude | Probablement pas à toucher. |
+| `app/_components/Carousel.tsx` | Composants React qui rendent les slides | À toucher uniquement si on ajoute/modifie un type de slide. |
+| `app/_components/carousel.css` | Styles correspondants | Idem. |
+| `data/articles-source.json` | 30 articles bruts — bonne diversité (6 catégories) pour tester la générosité du prompt | Lecture uniquement (sauf si on enrichit avec d'autres articles). |
+
+### Méthode suggérée pour la prochaine session
+
+1. **Audit** : générer 3-4 carrousels sur des articles différents (`/editor/<slug>` → "Générer le carrousel") et observer ce qui sonne juste / faux. L'utilisateur pointe ce qui le dérange.
+2. **Diagnostic** : pour chaque problème, identifier si c'est BRAND_VOICE, schéma, ou un type de slide précis.
+3. **Itération** : modifier le prompt, re-générer, comparer. Le cache draft est dans `os.tmpdir()/carrousel-template-drafts/` — supprimer le fichier pour forcer une régénération propre.
+4. **Commits granulaires** : 1 commit par direction validée (ex : "prompt: rendre method et steps narrativement distincts").
+
+---
+
+## Contraintes (toujours valables)
 
 | Aspect | Contrainte |
 |---|---|
 | **Palette** | INTOUCHABLE — `#3C2015` brun, `#828234` olive, `#EA609F` rose, `#F4EDC6` beige doré, `#FFFDF8` ivoire |
 | **Fonts** | INTOUCHABLES — Fraunces (serif) + Public Sans (sans) |
-| **Voix éditoriale** | Hors scope — c'est l'objet du `BRAND_VOICE` dans `lib/prompts/extract.ts` |
-| **Champs des slides (schéma Zod)** | Hors scope — `lib/schemas.ts`. Si on les change, refaire `BRAND_VOICE` ET `Carousel.tsx` |
-| **Layouts / compositions** | C'est CE QU'ON CHANGE |
-
----
-
-## Diagnostic posé
-
-### Pattern générique repéré
-
-Toutes les slides suivent le même squelette : `tag pill + titre géant + contenu vertical empilé + action en footer`. C'est ce qui les fait toutes se ressembler.
-
-### Observations ciblées (issues de la session du 8 mai)
-
-1. **Hiérarchie inversée cover/body** — la cover fait 108px et les body font 116px. Inversement : la cover devrait dominer. Fix simple : cover → 120px, body → 100px (s2: 84, s3: 72).
-2. **Glassmorphism daté** sur le hook (cover/cta) — `backdrop-filter: blur(32px)` + ombre 60px + bordure olive + radius 16. C'est l'esthétique iOS 2018-2020. Aller vers : carte solide cream, ombre subtile, bordure fine.
-3. **Slide donts trop saturée en rose** — fond rose pâle + croix rose + bordure rose 6px à chaque entry. La slide se neutralise. Adoucir : croix brune ou olive, garder la barre rose comme accent unique.
-
-### Patterns à casser pour gagner en personnalité
-
-- Cover/CTA **symétriques** (même hook block) → leur donner 2 traitements distincts
-- Method/Steps/Donts = **3 variantes d'une même grille** → leur donner 3 personnalités (numéros énormes décoratifs / ligne typographique éditoriale / treatment manifesto)
-- Body = **un seul layout** quel que soit le contenu → 2-3 variantes selon que la slide a un testbox / une preuve / une idée pure
-- **Image full + carte translucide bottom-right** sur cover/cta → c'est le template Pinterest 2023. Essayer : split asymétrique, cover tout-typo, cover avec marge éditoriale (titre dans la marge, image inset)
-
----
-
-## La méthode convenue
-
-**Slide par slide.** Pour chacune :
-
-1. Proposer **2-3 layouts** distinctifs (description courte + esquisse mentale)
-2. L'utilisateur pointe celui qui l'intéresse
-3. Coder dans `app/_components/Carousel.tsx` + `app/_components/carousel.css`
-4. L'utilisateur voit en live via `/print/<slug>` (fond blanc, sans sidebar, format Insta direct)
-5. Si ça passe → `git commit` ; si ça casse → `git checkout .` et autre proposition
-6. On passe à la slide suivante
-
-**Ordre suggéré** (à confirmer avec l'utilisateur en début de session) :
-
-1. **cover** (hook = ton du carrousel — si elle est forte, le reste hérite de l'énergie)
-2. **cta** (en miroir de la cover, traitement distinct)
-3. **body** (le format majoritaire, 4-6 slides par carrousel)
-4. **method / steps / donts** (les 3 listes — leur donner 3 personnalités)
-
----
-
-## Map des fichiers à toucher
-
-| Fichier | Rôle | Lignes pertinentes |
-|---|---|---|
-| `app/_components/Carousel.tsx` | Rendu React, 6 composants `Cover` / `Body` / `Method` / `Steps` / `Donts` / `Cta` | `Cover` ln 96, `Cta` ln 120, `Body` ln 233, `Method` ln 296, `Steps` ln 360, `Donts` ln 424 |
-| `app/_components/carousel.css` | Tous les styles préfixés `cs-`. Découpé en sections par type | Hook (cover/cta) ln 44, Body ln 165, Method ln 289, Steps ln 329, Donts ln 372 |
-| `lib/schemas.ts` | Schéma Zod des slides — **NE PAS TOUCHER** sauf si on ajoute un champ | (référence pour comprendre les champs dispo) |
-
----
-
-## Le checkpoint git
-
-Si on casse quelque chose pendant le redesign, retour au dernier commit propre :
-
-```bash
-cd ~/dev/osecom-app
-git status                 # voir ce qui est modifié
-git checkout .             # tout annuler (uniquement fichiers tracked)
-# ou pour un retour total :
-git reset --hard HEAD      # ⚠ destructif, perd toutes les modifs non-committées
-```
-
-État du repo au début de session :
-- Commit `5ce7aa5` — initial commit
-- Commit `ed3202a` — `docs: PREVIEW.md` (HEAD au début de la session redesign)
-- Branch `main`, tracking `origin/main`
-
-**Stratégie de commits pendant le redesign** : 1 commit par slide validée, pour pouvoir revenir en arrière à granularité fine.
+| **Compositions visuelles** | Validées dans la session du 2026-05-09. Ne pas y revenir sauf demande. |
+| **Voix éditoriale Osecom** | Direct, structuré, didactique, tutoyé. *Pose le piège, donne la mécanique, conclus sur l'action.* |
 
 ---
 
 ## Comment voir le résultat en live
 
-Le moyen le plus rapide pendant le redesign : utiliser la route `/print/<slug>` (fond blanc, sans header ni sidebar, juste les slides en vertical 1080×1350 scaled à 540).
+URL la plus pratique pendant le travail sur les prompts : `/editor/<slug>`, qui permet de cliquer "Générer le carrousel" et voir le résultat avec édition inline. Pour un rendu propre (sans sidebar), `/print/<slug>` (lit le draft du cache).
 
-**Drafts déjà en cache** dans `os.tmpdir()/carrousel-template-drafts/` :
-- `transformer-contenu-en-clients` (utilisé pour `PREVIEW.md`)
-- `strategie-contenu-orientee-business` (autre exemple riche, contient method/steps/donts/cta)
+```bash
+# démarrer le dev server
+cd ~/dev/osecom-app
+npm run dev   # http://localhost:3000
 
-URLs locales (après `npm run dev`) :
-- http://localhost:3000/print/transformer-contenu-en-clients
-- http://localhost:3000/print/strategie-contenu-orientee-business
+# vider le cache d'un draft pour forcer une re-génération
+rm "$TMPDIR/carrousel-template-drafts/<slug>.json"
 
-Si le cache est vide, il faut soit :
-1. Cliquer "Générer le carrousel" dans `/editor/<slug>` puis "Sauvegarder PNG" (ça écrit dans le cache)
-2. Ou injecter manuellement un draft dans le cache (cf. `lib/draft-cache.ts:writeDraft`)
+# lister les drafts en cache
+ls "$TMPDIR/carrousel-template-drafts/"
+```
+
+Drafts probablement déjà en cache au démarrage de la prochaine session :
+- `transformer-contenu-en-clients`
+- `strategie-contenu-orientee-business`
+- `7-erreurs-empechent-convertir`
+
+30 slugs disponibles dans `data/articles-source.json` pour générer plus de variété.
+
+### Scripts utiles
+
+```bash
+# debug auto-fit sur un slug
+node scripts/debug-fit.mjs <slug>
+
+# screenshot d'une slide précise (1-based index)
+node scripts/screenshot-slide.mjs <slug> 5
+```
 
 ---
 
-## Démarrage de la session
+## Préférences utilisateur (signaux observés)
+
+### Ce qui marche
+
+- Approche **slide par slide / changement par changement**, validation à chaque étape
+- **Code et montre** : préfère voir le résultat en live plutôt que des descriptions abstraites
+- **Branche de test** avant gros chantier visuel, **fast-forward merge** quand tout est validé
+- Commits granulaires avec messages descriptifs (commit `87b2ae4` apprécié comme template)
+- Demander confirmation avant un push (`git push` doit être explicitement validé)
+
+### Ce qui agace
+
+- Les longues pages d'explication abstraites sans action concrète
+- Les questions ouvertes en série — proposer 2-3 options concrètes à choisir > "qu'est-ce que tu veux"
+- Les solutions "couper le contenu" (`overflow: hidden` sans réflexion sur la cause)
+- Faire des modifications larges sans validation préalable
+- Les références aux tics "claude code" / "AI app" : eyebrow chips, dots à halo, italique en couleur d'accent, glassmorphism trop marqué, etc. → **palette + typo préservées mais composition à éloigner du look IA-app par défaut**
+
+### Style de communication préféré
+
+- Réponses **courtes et directes** (le user fait des tests un par un)
+- Quand une question est nécessaire, utiliser `AskUserQuestion` avec 2-3 options claires plutôt qu'une question texte ouverte
+- Diagnostic technique précis quand quelque chose ne marche pas (ex : Playwright pour debug à la place de l'utilisateur)
+- Rolling back propre quand demandé (`git checkout`, `git restore`, `git branch -D`)
+
+---
+
+## Démarrage rapide
 
 ```bash
 cd ~/dev/osecom-app
-git pull                    # au cas où
+git pull                    # synchroniser au cas où
 npm run dev                 # démarre Next.js sur :3000
-# vérifier dans une autre fenêtre :
-curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3000/print/transformer-contenu-en-clients
-# doit renvoyer 200 (sinon le cache est vide → regénérer)
+# vérifier l'état git :
+git log --oneline -5
+git status
 ```
 
-Si le dev server tourne déjà depuis hier, vérifier que les nouvelles modifs CSS/TSX sont bien hot-reloadées (Next.js le fait normalement). En cas de doute, kill + restart.
+Si le dev server tourne déjà depuis hier, vérifier que les modifs hot-reloadent (Next.js le fait normalement). En cas de doute, `pkill -f "next dev"` puis relancer.
 
 ---
 
-## Notes de session
+## Mini-FAQ
 
-### Ce que l'utilisateur attend
-
-- **Pas un design générique de plus** — il a explicitement repéré que le design actuel est "trop Claude Code"
-- **Personnalité** — chaque slide doit avoir son caractère propre, pas être une variante d'un même template
-- **Réfs visuelles bienvenues** : si tu veux proposer un layout, dis-le en référence à un magazine/site/agence connue (Bloomberg Businessweek, Linear, Stripe Press, NYT Mag, Monocle, etc.) plutôt qu'en abstrait
-
-### Ce que l'utilisateur n'aime PAS (signaux faibles à éviter)
-
-- Les longues pages d'explication abstraites — il préfère "code et montre"
-- Les questions ouvertes en série — proposer 2-3 options concrètes à choisir > "qu'est-ce que tu veux"
-- Le glassmorphism / blurred translucent cards (signature template 2022-2024)
-- Les "listes de cards" répétitives (toutes les slides ressemblent à des bullet points)
-
-### Ce qu'il aime (à reproduire)
-
-- Approche slide-par-slide avec validation à chaque étape
-- Commits granulaires pour rollback facile
-- Voir le résultat en live sur `/print/<slug>` plutôt que dans des descriptions
-
----
-
-## Mini-FAQ pour la nouvelle session
-
-**Q : Je dois lire quoi avant de coder ?**
+**Q : Je dois lire quoi avant de coder sur les prompts ?**
 1. Ce fichier (tu y es)
-2. `app/_components/carousel.css` (le design system actuel en CSS)
-3. `app/_components/Carousel.tsx` (les 6 composants React)
-4. `STRATEGY.md` (contexte business)
-5. `PREVIEW.md` (ce que voit le client — référence visuelle)
+2. `lib/prompts/extract.ts` (le prompt actuel)
+3. `lib/schemas.ts` (les contraintes Zod)
+4. 2-3 articles dans `data/articles-source.json` pour avoir le matériau d'entrée en tête
 
-**Q : Si je veux régénérer un carrousel pour test ?**
+**Q : Régénérer un carrousel pour test ?**
 ```bash
+# via l'UI : aller sur http://localhost:3000/editor/<slug> et cliquer "Générer"
+# via curl direct (sans cache) :
+rm "$TMPDIR/carrousel-template-drafts/<slug>.json" 2>/dev/null
 curl -s -X POST http://localhost:3000/api/extract \
   -H "Content-Type: application/json" \
-  -d '{"slug":"transformer-contenu-en-clients"}' \
-  -o /tmp/draft.json
-# puis injecter dans le cache pour /print :
-node -e "const fs=require('fs'),path=require('path'),os=require('os');const d=JSON.parse(fs.readFileSync('/tmp/draft.json','utf8'));fs.mkdirSync(path.join(os.tmpdir(),'carrousel-template-drafts'),{recursive:true});fs.writeFileSync(path.join(os.tmpdir(),'carrousel-template-drafts','transformer-contenu-en-clients.json'),JSON.stringify(d.draft));"
+  -d '{"slug":"<slug>"}' | jq .draft
 ```
 
-**Q : Les fichiers `.png` du carrousel exemple sont où ?**
-- Source de vérité : `~/Documents/osecom-carrousel-output/transformer-contenu-en-clients/`
-- Copie dans le repo (pour `PREVIEW.md`) : `docs/preview/transformer-contenu-en-clients/`
+**Q : Comment rollback proprement si une session déraille ?**
+```bash
+# si commits déjà faits :
+git log --oneline                  # repérer le sha bon
+git reset --hard <sha>             # ⚠ destructif, ne push pas après si déjà push
 
-**Q : Y a-t-il d'autres carrousels prévalidés à référencer ?**
-Pas pour l'instant. Seul `transformer-contenu-en-clients` a été exporté en PNG. Si on veut enrichir `PREVIEW.md`, il faudra exporter les autres au fur et à mesure.
+# si pas encore commit :
+git restore .                      # annule tous les changements tracked
+git clean -fd                      # supprime les untracked (⚠ vérifier avant)
+```
+
+**Q : Y a-t-il une CI / des tests à respecter ?**
+Pas de CI configurée à ce stade. Pas de tests automatisés. La validation se fait au visuel + via les scripts debug Playwright (`scripts/debug-fit.mjs`).
 
 ---
 
-## Avant de commencer le redesign — questions à poser à l'utilisateur
+## Avant de commencer la session prompts — questions à poser à l'utilisateur
 
-1. **Tu veux qu'on attaque par la cover** comme on avait dit, ou tu changes d'avis ?
-2. **As-tu des réfs visuelles** depuis hier ? (Pinterest, screenshot d'un carrousel que tu kiffes, charte graphique Osecom existante…)
-3. **Y a-t-il un logo Osecom** que je devrais intégrer dans la cover ou le footer ? (rien dans `public/` aujourd'hui)
+1. **Tu veux qu'on parte d'un audit** (générer 2-3 carrousels et observer ensemble) ou tu as déjà un grief précis sur le prompt actuel ?
+2. **Y a-t-il un type de slide qui te semble particulièrement à retravailler** (cover, body, method, steps, donts, cta) ?
+3. **As-tu en tête de nouveaux types de slides** à ajouter (citation, stat chiffrée, comparatif, etc.) ou on reste sur les 6 actuels ?
+4. **Veux-tu contraindre les tags** (liste finie d'étiquettes possibles) ou les laisser libres comme aujourd'hui ?
