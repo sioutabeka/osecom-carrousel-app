@@ -1,6 +1,7 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import "./carousel.css";
 import { EditableText } from "./EditableText";
 import type {
@@ -22,6 +23,67 @@ const ADDRESSES = [
 
 const FOOTER_LABEL = "Osecom";
 const FOOTER_SIDE = "communication & storytelling";
+
+/**
+ * FitToParent — scale visuel proportionnel du contenu si débordement.
+ * Mesure la hauteur naturelle du contenu (flex-shrink: 0 sur enfants pour
+ * éviter la compression flex) vs la hauteur disponible du parent et applique
+ * un transform: scale(...) pour que tout tienne sans coupure. Re-mesure via
+ * ResizeObserver pour gérer le chargement async des polices.
+ */
+function FitToParent({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    const parent = el?.parentElement;
+    if (!el || !parent) return;
+
+    const measure = () => {
+      // scrollHeight n'est pas affecté par transform, donc pas besoin de
+      // reset. On utilise el.clientHeight (zone disponible du wrapper) pour
+      // bien tenir compte du padding du parent (le wrapper height:100% =
+      // content box du parent, sans padding).
+      const parentH = el.clientHeight;
+      const contentH = el.scrollHeight;
+      if (parentH <= 0) return;
+      const target = contentH > parentH ? parentH / contentH : 1;
+      setScale((prev) => (Math.abs(prev - target) > 0.005 ? target : prev));
+    };
+
+    measure();
+
+    // re-mesure si la taille change (fonts qui chargent, contenu édité, etc.)
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    ro.observe(parent);
+
+    // Au cas où les polices arrivent après le premier paint
+    if (typeof document !== "undefined" && (document as Document).fonts) {
+      (document as Document).fonts.ready.then(measure).catch(() => {});
+    }
+
+    return () => ro.disconnect();
+  }, [children]);
+
+  return (
+    <div
+      ref={ref}
+      className="cs-fit"
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        transformOrigin: "top left",
+        transform: scale < 1 ? `scale(${scale})` : undefined,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
 interface CarouselProps {
   draft: CarouselDraft;
@@ -235,60 +297,62 @@ function Body({ slide, editable, onChange }: SlideProps<BodySlide>) {
   return (
     <div className="cs-slide cs-body-bg">
       <div className="cs-body-content">
-        <Tag
-          value={slide.tag}
-          editable={editable}
-          onChange={(tag) => onChange({ ...slide, tag })}
-        />
-        <h1 className={`cs-title ${pickTitleSize(slide.title)}`}>
-          <EditableText
-            value={slide.title}
+        <FitToParent>
+          <Tag
+            value={slide.tag}
             editable={editable}
-            onChange={(title) => onChange({ ...slide, title })}
+            onChange={(tag) => onChange({ ...slide, tag })}
           />
-        </h1>
-        <p className="cs-body-text">
-          <EditableText
-            value={slide.body}
-            editable={editable}
-            onChange={(body) => onChange({ ...slide, body })}
-          />
-        </p>
-        {slide.testbox && (
-          <div className="cs-testbox">
-            <div className="cs-testbox-label">
-              {editable ? (
+          <h1 className={`cs-title ${pickTitleSize(slide.title)}`}>
+            <EditableText
+              value={slide.title}
+              editable={editable}
+              onChange={(title) => onChange({ ...slide, title })}
+            />
+          </h1>
+          <p className="cs-body-text">
+            <EditableText
+              value={slide.body}
+              editable={editable}
+              onChange={(body) => onChange({ ...slide, body })}
+            />
+          </p>
+          {slide.testbox && (
+            <div className="cs-testbox">
+              <div className="cs-testbox-label">
+                {editable ? (
+                  <EditableText
+                    value={slide.testbox.label}
+                    editable
+                    onChange={(label) =>
+                      onChange({
+                        ...slide,
+                        testbox: { ...slide.testbox!, label },
+                      })
+                    }
+                  />
+                ) : (
+                  slide.testbox.label
+                )}
+              </div>
+              <p className="cs-testbox-text">
                 <EditableText
-                  value={slide.testbox.label}
-                  editable
-                  onChange={(label) =>
-                    onChange({
-                      ...slide,
-                      testbox: { ...slide.testbox!, label },
-                    })
+                  value={slide.testbox.text}
+                  editable={editable}
+                  onChange={(text) =>
+                    onChange({ ...slide, testbox: { ...slide.testbox!, text } })
                   }
                 />
-              ) : (
-                slide.testbox.label
-              )}
+              </p>
             </div>
-            <p className="cs-testbox-text">
-              <EditableText
-                value={slide.testbox.text}
-                editable={editable}
-                onChange={(text) =>
-                  onChange({ ...slide, testbox: { ...slide.testbox!, text } })
-                }
-              />
-            </p>
-          </div>
-        )}
-        {!slide.testbox && <div style={{ marginBottom: "auto" }} />}
-        <Action
-          text={slide.action}
-          editable={editable}
-          onChange={(action) => onChange({ ...slide, action })}
-        />
+          )}
+          {!slide.testbox && <div style={{ marginBottom: "auto" }} />}
+          <Action
+            text={slide.action}
+            editable={editable}
+            onChange={(action) => onChange({ ...slide, action })}
+          />
+        </FitToParent>
       </div>
     </div>
   );
@@ -303,56 +367,58 @@ function Method({ slide, editable, onChange }: SlideProps<MethodSlide>) {
   return (
     <div className="cs-slide cs-body-bg">
       <div className="cs-body-content">
-        <Tag
-          value={slide.tag}
-          editable={editable}
-          onChange={(tag) => onChange({ ...slide, tag })}
-        />
-        <h1 className={`cs-title ${pickTitleSize(slide.title)}`}>
-          <EditableText
-            value={slide.title}
+        <FitToParent>
+          <Tag
+            value={slide.tag}
             editable={editable}
-            onChange={(title) => onChange({ ...slide, title })}
+            onChange={(tag) => onChange({ ...slide, tag })}
           />
-        </h1>
-        <div className="cs-steps">
-          {slide.steps.map((s, i) => (
-            <div key={i} className="cs-step">
-              <div className="cs-step-num">{String(i + 1).padStart(2, "0")}</div>
-              <div>
-                <div className="cs-step-title">
-                  {editable ? (
-                    <EditableText
-                      value={s.title}
-                      editable
-                      onChange={(title) => updateStep(i, { title })}
-                    />
-                  ) : (
-                    s.title
-                  )}
-                </div>
-                <div className="cs-step-text">
-                  {editable ? (
-                    <EditableText
-                      value={s.text}
-                      editable
-                      onChange={(text) => updateStep(i, { text })}
-                    />
-                  ) : (
-                    s.text
-                  )}
+          <h1 className={`cs-title ${pickTitleSize(slide.title)}`}>
+            <EditableText
+              value={slide.title}
+              editable={editable}
+              onChange={(title) => onChange({ ...slide, title })}
+            />
+          </h1>
+          <div className="cs-steps">
+            {slide.steps.map((s, i) => (
+              <div key={i} className="cs-step">
+                <div className="cs-step-num">{String(i + 1).padStart(2, "0")}</div>
+                <div>
+                  <div className="cs-step-title">
+                    {editable ? (
+                      <EditableText
+                        value={s.title}
+                        editable
+                        onChange={(title) => updateStep(i, { title })}
+                      />
+                    ) : (
+                      s.title
+                    )}
+                  </div>
+                  <div className="cs-step-text">
+                    {editable ? (
+                      <EditableText
+                        value={s.text}
+                        editable
+                        onChange={(text) => updateStep(i, { text })}
+                      />
+                    ) : (
+                      s.text
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-        {(slide.action || editable) && (
-          <Action
-            text={slide.action ?? ""}
-            editable={editable}
-            onChange={(action) => onChange({ ...slide, action })}
-          />
-        )}
+            ))}
+          </div>
+          {(slide.action || editable) && (
+            <Action
+              text={slide.action ?? ""}
+              editable={editable}
+              onChange={(action) => onChange({ ...slide, action })}
+            />
+          )}
+        </FitToParent>
       </div>
     </div>
   );
@@ -367,56 +433,58 @@ function Steps({ slide, editable, onChange }: SlideProps<StepsSlide>) {
   return (
     <div className="cs-slide cs-body-bg">
       <div className="cs-body-content">
-        <Tag
-          value={slide.tag}
-          editable={editable}
-          onChange={(tag) => onChange({ ...slide, tag })}
-        />
-        <h1 className={`cs-title ${pickTitleSize(slide.title)}`}>
-          <EditableText
-            value={slide.title}
+        <FitToParent>
+          <Tag
+            value={slide.tag}
             editable={editable}
-            onChange={(title) => onChange({ ...slide, title })}
+            onChange={(tag) => onChange({ ...slide, tag })}
           />
-        </h1>
-        <div className="cs-step-list">
-          {slide.steps.map((s, i) => (
-            <div key={i} className="cs-step-row">
-              <div className="cs-step-row-num">{String(i + 1).padStart(2, "0")}</div>
-              <div className="cs-step-row-content">
-                <div className="cs-step-row-title">
-                  {editable ? (
-                    <EditableText
-                      value={s.title}
-                      editable
-                      onChange={(title) => updateStep(i, { title })}
-                    />
-                  ) : (
-                    s.title
-                  )}
-                </div>
-                <div className="cs-step-row-desc">
-                  {editable ? (
-                    <EditableText
-                      value={s.text}
-                      editable
-                      onChange={(text) => updateStep(i, { text })}
-                    />
-                  ) : (
-                    s.text
-                  )}
+          <h1 className={`cs-title ${pickTitleSize(slide.title)}`}>
+            <EditableText
+              value={slide.title}
+              editable={editable}
+              onChange={(title) => onChange({ ...slide, title })}
+            />
+          </h1>
+          <div className="cs-step-list">
+            {slide.steps.map((s, i) => (
+              <div key={i} className="cs-step-row">
+                <div className="cs-step-row-num">{String(i + 1).padStart(2, "0")}</div>
+                <div className="cs-step-row-content">
+                  <div className="cs-step-row-title">
+                    {editable ? (
+                      <EditableText
+                        value={s.title}
+                        editable
+                        onChange={(title) => updateStep(i, { title })}
+                      />
+                    ) : (
+                      s.title
+                    )}
+                  </div>
+                  <div className="cs-step-row-desc">
+                    {editable ? (
+                      <EditableText
+                        value={s.text}
+                        editable
+                        onChange={(text) => updateStep(i, { text })}
+                      />
+                    ) : (
+                      s.text
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-        {(slide.action || editable) && (
-          <Action
-            text={slide.action ?? ""}
-            editable={editable}
-            onChange={(action) => onChange({ ...slide, action })}
-          />
-        )}
+            ))}
+          </div>
+          {(slide.action || editable) && (
+            <Action
+              text={slide.action ?? ""}
+              editable={editable}
+              onChange={(action) => onChange({ ...slide, action })}
+            />
+          )}
+        </FitToParent>
       </div>
     </div>
   );
@@ -431,54 +499,56 @@ function Donts({ slide, editable, onChange }: SlideProps<DontsSlide>) {
   return (
     <div className="cs-slide cs-body-bg">
       <div className="cs-body-content">
-        <Tag
-          value={slide.tag}
-          editable={editable}
-          onChange={(tag) => onChange({ ...slide, tag })}
-        />
-        <h1 className={`cs-title ${pickTitleSize(slide.title)}`}>
-          <EditableText
-            value={slide.title}
+        <FitToParent>
+          <Tag
+            value={slide.tag}
             editable={editable}
-            onChange={(title) => onChange({ ...slide, title })}
+            onChange={(tag) => onChange({ ...slide, tag })}
           />
-        </h1>
-        <div className="cs-donts">
-          {slide.donts.map((d, i) => (
-            <div key={i} className="cs-dont">
-              <div className="cs-dont-cross">✕</div>
-              <div className="cs-dont-content">
-                <div className="cs-dont-title">
-                  {editable ? (
-                    <EditableText
-                      value={d.title}
-                      editable
-                      onChange={(title) => updateDont(i, { title })}
-                    />
-                  ) : (
-                    d.title
-                  )}
-                </div>
-                <div className="cs-dont-reason">
-                  {editable ? (
-                    <EditableText
-                      value={d.reason}
-                      editable
-                      onChange={(reason) => updateDont(i, { reason })}
-                    />
-                  ) : (
-                    d.reason
-                  )}
+          <h1 className={`cs-title ${pickTitleSize(slide.title)}`}>
+            <EditableText
+              value={slide.title}
+              editable={editable}
+              onChange={(title) => onChange({ ...slide, title })}
+            />
+          </h1>
+          <div className="cs-donts">
+            {slide.donts.map((d, i) => (
+              <div key={i} className="cs-dont">
+                <div className="cs-dont-cross">✕</div>
+                <div className="cs-dont-content">
+                  <div className="cs-dont-title">
+                    {editable ? (
+                      <EditableText
+                        value={d.title}
+                        editable
+                        onChange={(title) => updateDont(i, { title })}
+                      />
+                    ) : (
+                      d.title
+                    )}
+                  </div>
+                  <div className="cs-dont-reason">
+                    {editable ? (
+                      <EditableText
+                        value={d.reason}
+                        editable
+                        onChange={(reason) => updateDont(i, { reason })}
+                      />
+                    ) : (
+                      d.reason
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-        <Action
-          text={slide.action}
-          editable={editable}
-          onChange={(action) => onChange({ ...slide, action })}
-        />
+            ))}
+          </div>
+          <Action
+            text={slide.action}
+            editable={editable}
+            onChange={(action) => onChange({ ...slide, action })}
+          />
+        </FitToParent>
       </div>
     </div>
   );
