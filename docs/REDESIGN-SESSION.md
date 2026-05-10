@@ -4,7 +4,7 @@
 
 ---
 
-## Où on en est (mise à jour 2026-05-09)
+## Où on en est (mise à jour 2026-05-10)
 
 ### Sessions passées
 
@@ -22,7 +22,26 @@
 - `next.config.mjs` : `devIndicators: false` → retire le badge "N" Next.js qui apparaissait sur les exports d'images.
 - 2 scripts debug : `scripts/debug-fit.mjs` (Playwright qui inspecte chaque slide, flag overflow + scale appliqué) et `scripts/screenshot-slide.mjs` (screenshot ciblé d'une slide).
 
+**2026-05-10 — Patterns narratifs CRUD** :
+- Constat utilisateur : *"c'est rébarbatif pour les consommateurs, tous les carrousels se ressemblent"*. Décision : casser la monotonie **narrative** (le visuel reste validé), pas modifier le composant React.
+- Ajustements `BRAND_VOICE` faits par l'utilisateur dans `lib/prompts/extract.ts` : passage *"agence"* → *"freelance de communication digitale, growth, community manager en tirant le meilleur de l'ia et de la tech"*. Ajout d'une consigne *"multi-hook tt au long et pose des questions en titre que se pose la cible"*. `body.title` redéfini en *"question en forme de hook catchy"* (avant : *"reformulation forte de l'idée"*).
+- 4 patterns narratifs définis avec brief structuré (job narratif, séquence attendue, ton, tags privilégiés, parfois des interdits) :
+  - `piege-mecanique` — démolir une croyance, donner la voie propre
+  - `manifesto` — poser une vision, défendre un parti pris (interdit `method`/`steps`)
+  - `comparatif` — opposer ancien monde vs nouveau monde
+  - `story` — raconter un récit (cas client, retour d'expérience)
+- L'éditeur **choisit le pattern par carrousel** dans un dropdown sur `/editor/<slug>` (rejeté : Claude choisit auto, alea pondéré, hybride). Le brief du pattern est injecté en haut du user message envoyé à Claude.
+- **CRUD complet via UI** sur `/patterns` (cohérent avec le système de thèmes) :
+  - Store fichier `data/patterns.json` avec auto-seed (`lib/patterns-store.ts` server-only)
+  - Routes API `app/api/patterns/route.ts` (GET/POST) + `app/api/patterns/[id]/route.ts` (GET/PUT/DELETE)
+  - Page `app/patterns/page.tsx` + composant client `_PatternsManager.tsx` : liste cards, form création (slug auto depuis label, label/tagline/brief markdown), édition inline, suppression avec `confirm()` (bloquée si dernier pattern restant, 403)
+  - `ExtractButton.tsx` fetch `/api/patterns` au mount, dropdown dynamique, lien "gérer" vers `/patterns`
+- Validation Zod stricte : `id` kebab-case regex, `label` ≤ 80, `tagline` ≤ 160, `brief` ≥ 20 caractères, `id` immutable après création.
+
 État repo après push :
+- `<sha-à-remplir>` patterns: voix freelance + 4 patterns narratifs en CRUD
+- `1ef1072` themes: add jn, k, k-k, k-k-k + handoff doc update
+- `3c9a119` themes: add test, test2, test3 background sets
 - `87b2ae4` slides: redesign visuel + auto-fit overflow
 - `529658b` content: add 24 articles (IDs 7-30)
 - Tout pushé sur `origin/main` (`sioutabeka/osecom-carrousel-app`, privé).
@@ -35,44 +54,49 @@
 
 ---
 
-## Prochaine session — Templates et directives de l'app dans le texte du carrousel
+## Prochaine session — Tester la variabilité réelle des patterns + itérer
 
-### Scope annoncé par l'utilisateur
+### Tâche immédiate
 
-> *"la prochaine fois on va travailler les templates et directive de l'app dans le texte du carrousel"*
+**Tester les 4 patterns actuels sur 3 articles différents** pour vérifier qu'ils produisent bien des carrousels narrativement distincts (pas juste des reformulations cosmétiques du même squelette).
 
-Lecture : on ne touche plus le **visuel** des slides, on travaille le **contenu textuel** que Claude génère pour chaque type de slide. C'est-à-dire :
+Méthode :
+1. Choisir 3 articles couvrant 3 angles : un "explicatif" (`transformer-contenu-en-clients`), un "erreurs" (`7-erreurs-empechent-convertir`), un "stratégique" (`strategie-contenu-orientee-business`).
+2. Pour chacun, générer 2-3 patterns différents et comparer côte à côte. Si manifesto et piege-mecanique sortent presque pareil → resserrer les briefs (interdire plus explicitement certains types de slides, forcer des contraintes structurelles plus fortes).
+3. Valider avec l'utilisateur : est-ce qu'un consommateur Insta percevrait la différence entre 2 carrousels du même article avec 2 patterns ?
 
-1. **Le prompt** qui pilote Claude lors de la génération (`lib/prompts/extract.ts` — la constante `BRAND_VOICE`)
-2. **Le schéma** qui contraint les sorties Claude (`lib/schemas.ts` — Zod)
-3. **Les directives par type de slide** (cover, body, method, steps, donts, cta) — actuellement dans le BRAND_VOICE en bloc, peut-être à séparer par template
+### Pistes à explorer ensuite (BRAND_VOICE + schéma)
 
-### Pistes à explorer (à confirmer avec l'utilisateur en début de session)
+Une fois les patterns validés, le chantier prompts plus large reste ouvert :
 
-- **Affiner les directives par type de slide** : longueur des titres, ton, structure narrative attendue. Aujourd'hui c'est dans le BRAND_VOICE mais c'est dense — on pourrait faire des directives ciblées.
+- **Affiner les directives par type de slide** : longueur des titres, ton, structure narrative attendue. Aujourd'hui c'est dans le BRAND_VOICE en bloc, dense — on pourrait faire des directives ciblées.
 - **Rendre les types de slides plus distinctifs** : aujourd'hui method et steps se ressemblent narrativement (juste 2-3 vs 4-8 étapes). Donner à chacun un *job narratif* différent (method = framework conceptuel, steps = checklist opérationnelle, donts = anti-patterns à fuir).
 - **Ajouter de nouveaux types ?** : si l'utilisateur veut introduire des templates supplémentaires (ex : `quote` pour citation, `stat` pour donnée chiffrée, `compare` pour avant/après), c'est ici qu'on l'ajoute. **Impact** : il faudrait alors aussi étendre `lib/schemas.ts` ET `app/_components/Carousel.tsx` (composant React + CSS).
 - **Voix éditoriale** : peaufiner la voix Osecom dans le prompt si l'utilisateur trouve que les sorties Claude sont trop génériques ou trop "Claude" dans la formulation.
 - **Tags textuels** : aujourd'hui Claude peut générer n'importe quel tag (`LE PIÈGE`, `LA MÉTHODE`…). On pourrait les contraindre à une liste finie pour homogénéiser le carrousel global, ou au contraire les laisser libres pour de la variété.
 - **Markers riches** (`*italique*`, `**gras**`) : aujourd'hui autorisés à 1-2 par slide. Si l'utilisateur veut plus / moins / autre chose (ex : underline, small caps), c'est ici.
 
+**Note manifesto** : pattern qui empile 3-4 body d'affilée. Aujourd'hui toutes les body partagent le même cadre visuel → risque de monotonie visuelle même quand le narratif est varié. Si l'utilisateur valide narrativement le manifesto mais trouve le rendu visuel trop répétitif, c'est un follow-up "session visuelle" (composer plusieurs variantes de body slides).
+
 ### Map des fichiers pour cette session
 
 | Fichier | Rôle | Notes |
 |---|---|---|
-| `lib/prompts/extract.ts` | Prompt système (`BRAND_VOICE`) qui guide Claude | 189 lignes ; BRAND_VOICE en haut, schéma JSON en bas. C'est le **fichier principal** de la session. |
+| `lib/patterns.ts` | Types + Zod + seeds + slugify | Importable client + serveur. Le brief réel des patterns vit dans `data/patterns.json`, pas ici. |
+| `lib/patterns-store.ts` | FS CRUD server-only | Fonctions `list/get/create/update/delete`. Auto-seed à la 1ère lecture. |
+| `data/patterns.json` | Briefs réels des patterns | Source de vérité runtime. Modifiable via UI `/patterns` ou directement à la main. |
+| `app/patterns/_PatternsManager.tsx` | UI CRUD | Liste cards + form édition inline. |
+| `lib/prompts/extract.ts` | `BRAND_VOICE` + section "Patterns narratifs" | Le brief du pattern choisi est injecté en haut du user message. |
 | `lib/schemas.ts` | Schéma Zod des slides | 90 lignes. À toucher si on ajoute un type de slide ou un champ. |
-| `lib/claude.ts` | Wrapper d'appel à l'API Claude | Probablement pas à toucher. |
 | `app/_components/Carousel.tsx` | Composants React qui rendent les slides | À toucher uniquement si on ajoute/modifie un type de slide. |
-| `app/_components/carousel.css` | Styles correspondants | Idem. |
-| `data/articles-source.json` | 30 articles bruts — bonne diversité (6 catégories) pour tester la générosité du prompt | Lecture uniquement (sauf si on enrichit avec d'autres articles). |
+| `data/articles-source.json` | 30 articles bruts — bonne diversité (6 catégories) | Lecture uniquement. |
 
 ### Méthode suggérée pour la prochaine session
 
-1. **Audit** : générer 3-4 carrousels sur des articles différents (`/editor/<slug>` → "Générer le carrousel") et observer ce qui sonne juste / faux. L'utilisateur pointe ce qui le dérange.
-2. **Diagnostic** : pour chaque problème, identifier si c'est BRAND_VOICE, schéma, ou un type de slide précis.
-3. **Itération** : modifier le prompt, re-générer, comparer. Le cache draft est dans `os.tmpdir()/carrousel-template-drafts/` — supprimer le fichier pour forcer une régénération propre.
-4. **Commits granulaires** : 1 commit par direction validée (ex : "prompt: rendre method et steps narrativement distincts").
+1. **Test variabilité** : 3 articles × 2-3 patterns chacun. L'utilisateur juge si la différence est perceptible.
+2. **Itération briefs** : si un pattern converge vers un autre, resserrer son brief via `/patterns` (édition directe en UI, pas de redémarrage).
+3. **Diagnostic** : pour chaque problème, identifier si c'est BRAND_VOICE général, brief de pattern spécifique, ou un type de slide.
+4. **Commits granulaires** : 1 commit par direction validée (ex : "patterns: durcir interdits manifesto").
 
 ---
 
@@ -83,13 +107,14 @@ Lecture : on ne touche plus le **visuel** des slides, on travaille le **contenu 
 | **Palette** | INTOUCHABLE — `#3C2015` brun, `#828234` olive, `#EA609F` rose, `#F4EDC6` beige doré, `#FFFDF8` ivoire |
 | **Fonts** | INTOUCHABLES — Fraunces (serif) + Public Sans (sans) |
 | **Compositions visuelles** | Validées dans la session du 2026-05-09. Ne pas y revenir sauf demande. |
-| **Voix éditoriale Osecom** | Direct, structuré, didactique, tutoyé. *Pose le piège, donne la mécanique, conclus sur l'action.* |
+| **Voix éditoriale Osecom** | Direct, structuré, didactique, tutoyé. *Pose le piège, donne la mécanique, conclus sur l'action.* Format **multi-hook** : pose des questions en titre que se pose la cible (cf. modif `BRAND_VOICE` 2026-05-10). Positionnement : freelance, pas agence. |
+| **Patterns narratifs** | Choix obligatoire par carrousel parmi `data/patterns.json` (4 seedés : piege-mecanique, manifesto, comparatif, story). Nouveaux patterns créables via `/patterns`. |
 
 ---
 
 ## Comment voir le résultat en live
 
-URL la plus pratique pendant le travail sur les prompts : `/editor/<slug>`, qui permet de cliquer "Générer le carrousel" et voir le résultat avec édition inline. Pour un rendu propre (sans sidebar), `/print/<slug>` (lit le draft du cache).
+URL la plus pratique pendant le travail sur les prompts : `/editor/<slug>`, qui permet de choisir un pattern dans le dropdown puis cliquer "Générer le carrousel" et voir le résultat avec édition inline. Pour un rendu propre (sans sidebar), `/print/<slug>` (lit le draft du cache). Pour gérer les patterns : `/patterns` (créer / éditer / supprimer).
 
 ```bash
 # démarrer le dev server

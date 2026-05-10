@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Carousel from "./Carousel";
 import ThemePicker from "./ThemePicker";
 import type { CarouselDraft } from "@/lib/schemas";
+import type { PatternRecord } from "@/lib/patterns";
 
 interface Props {
   slug: string;
@@ -21,11 +22,35 @@ export default function ExtractButton({ slug }: Props) {
   const [elapsed, setElapsed] = useState<number | null>(null);
   const [showJson, setShowJson] = useState(false);
 
+  const [patterns, setPatterns] = useState<PatternRecord[]>([]);
+  const [pattern, setPattern] = useState<string>("");
+  const [patternsError, setPatternsError] = useState<string | null>(null);
+
   const [saving, setSaving] = useState(false);
   const [saveResult, setSaveResult] = useState<SaveResult | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const [editing, setEditing] = useState(false);
+
+  useEffect(() => {
+    let aborted = false;
+    fetch("/api/patterns")
+      .then((r) => r.json())
+      .then((data) => {
+        if (aborted) return;
+        const list = (data?.patterns ?? []) as PatternRecord[];
+        setPatterns(list);
+        if (list.length > 0) {
+          setPattern((prev) => prev || list[0].id);
+        }
+      })
+      .catch((e) => {
+        if (!aborted) setPatternsError(e instanceof Error ? e.message : "erreur");
+      });
+    return () => {
+      aborted = true;
+    };
+  }, []);
 
   async function generate() {
     setLoading(true);
@@ -39,7 +64,7 @@ export default function ExtractButton({ slug }: Props) {
       const res = await fetch("/api/extract", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug }),
+        body: JSON.stringify({ slug, pattern }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
@@ -76,10 +101,39 @@ export default function ExtractButton({ slug }: Props) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3 p-4 rounded-md bg-cream-soft border border-border-beige flex-wrap">
+        <label className="flex flex-col gap-1 text-[11px] font-bold tracking-[0.18em] uppercase text-ink-brown-soft">
+          <span className="flex items-center gap-2">
+            Pattern narratif
+            <a
+              href="/patterns"
+              className="normal-case tracking-normal text-[10px] underline text-olive hover:text-olive-dark"
+              title="Gérer les patterns"
+            >
+              gérer
+            </a>
+          </span>
+          <select
+            value={pattern}
+            onChange={(e) => setPattern(e.target.value)}
+            disabled={loading || patterns.length === 0}
+            className="px-3 py-2 rounded-md bg-white border border-olive/30 text-sm font-semibold tracking-normal normal-case text-ink-brown disabled:opacity-50"
+            title={patterns.find((p) => p.id === pattern)?.tagline ?? ""}
+          >
+            {patterns.length === 0 && <option value="">(chargement…)</option>}
+            {patterns.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.label} — {p.tagline}
+              </option>
+            ))}
+          </select>
+          {patternsError && (
+            <span className="normal-case tracking-normal text-[11px] text-red-700">⚠ {patternsError}</span>
+          )}
+        </label>
         <button
           type="button"
           onClick={generate}
-          disabled={loading}
+          disabled={loading || !pattern}
           className="px-5 py-2.5 rounded-md bg-olive text-white text-sm font-semibold tracking-wide hover:bg-olive-dark disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? "Claude réfléchit… (~45s)" : "Générer le carrousel"}
