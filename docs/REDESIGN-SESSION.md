@@ -39,7 +39,7 @@
 - Validation Zod stricte : `id` kebab-case regex, `label` ≤ 80, `tagline` ≤ 160, `brief` ≥ 20 caractères, `id` immutable après création.
 
 État repo après push :
-- `<sha-à-remplir>` patterns: voix freelance + 4 patterns narratifs en CRUD
+- `4863c3a` patterns: voix freelance + 4 patterns narratifs en CRUD
 - `1ef1072` themes: add jn, k, k-k, k-k-k + handoff doc update
 - `3c9a119` themes: add test, test2, test3 background sets
 - `87b2ae4` slides: redesign visuel + auto-fit overflow
